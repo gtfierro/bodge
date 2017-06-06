@@ -9,11 +9,17 @@ var TAGS map[string]string
 // API to implement
 
 // executes the lua code in the file, starting in a new Lua state
-func RunFile(path string) {
+func RunFile(path string) error {
+	L := lua.NewState()
+	defer L.Close()
+	LoadLib(L)
+	return L.DoFile(path)
 }
 
 // imports the lua code in the given file into the current Lua state
-func ImportFile(path string, L *lua.LState) {
+func ImportFile(path string, L *lua.LState) error {
+	//return L.LoadFile(path)
+	return nil
 }
 
 // executes the lua code in the file, starting in a new Lua state
