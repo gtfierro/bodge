@@ -1,4 +1,4 @@
-uri = "ciee/devices/echola/s.powerup.v0/%d/i.xbos.plug/slot/info"
+uri = "ciee/*/operative"
 count = 0
 subscribe(uri, nil, function(uri)
     count = count +1
