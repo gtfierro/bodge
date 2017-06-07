@@ -11,6 +11,7 @@ func LoadLib(L *lua.LState) {
 	L.SetGlobal("subscribe", L.NewFunction(Subscribe))
 	L.SetGlobal("publish", L.NewFunction(Publish))
 	L.SetGlobal("keeprunning", L.NewFunction(KeepRunning))
+	L.SetGlobal("sleep", L.NewFunction(Sleep))
 }
 
 // Get one message and payload object off of a subscription
@@ -108,6 +109,13 @@ func Publish(L *lua.LState) int {
 
 func KeepRunning(L *lua.LState) int {
 	for {
-		time.Sleep(300)
+		time.Sleep(300 * time.Second)
 	}
+}
+
+// milliseconds
+func Sleep(L *lua.LState) int {
+	n := L.ToNumber(1)
+	time.Sleep(time.Duration(n) * time.Millisecond)
+	return 0
 }
