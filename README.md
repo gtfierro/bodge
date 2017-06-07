@@ -16,3 +16,6 @@ Functions to implement:
       ```
     - can we get the equivalent of overriding `__setattr__` in Python?
 - [ ] Deploy to, import libraries, run code on BOSSWAVE URIs
+- [ ] more timer methods:
+    - [ ] fire a callback periodically (e.g. `invokePeriodically`)
+    - [ ] fire a callback after a set amount of time
