@@ -1,8 +1,7 @@
 # BW Lua
 
 Functions to implement:
-- [ ] query: return a list of messages
-    - [ ] queryone: just get the first
+- [X] query: return a list of messages
 - [ ] stats:
     - [ ] port https://github.com/montanaflynn/stats
 - [ ] kv store API:

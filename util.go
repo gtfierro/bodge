@@ -24,6 +24,12 @@ func pushMsg(msg *bw2.SimpleMessage, ponum string, L *lua.LState) {
 	var value interface{}
 	var err error
 
+	if po == nil {
+		table := L.NewTable()
+		L.Push(table)
+		return
+	}
+
 	// try different serializations
 	switch {
 	case po.IsTypeDF("2.0.0.0/8"):
