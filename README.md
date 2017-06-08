@@ -2,6 +2,7 @@
 
 Functions to implement:
 - [X] query: return a list of messages
+- [ ] publish with persist
 - [ ] stats:
     - [ ] port https://github.com/montanaflynn/stats
 - [ ] kv store API:
@@ -15,6 +16,10 @@ Functions to implement:
       ```
     - can we get the equivalent of overriding `__setattr__` in Python?
 - [ ] Deploy to, import libraries, run code on BOSSWAVE URIs
-- [ ] more timer methods:
-    - [ ] fire a callback periodically (e.g. `invokePeriodically`)
-    - [ ] fire a callback after a set amount of time
+- [X] more timer methods:
+    - [X] fire a callback periodically (e.g. `invokePeriodically`)
+    - [X] fire a callback after a set amount of time
+
+## Concurrency Model
+
+Rather than using Lua coroutines, might be nice to use the `cord` approach

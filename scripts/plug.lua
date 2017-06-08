@@ -13,4 +13,4 @@ subscribe(buttonuri, nil, function(uri, msg)
     end
 end)
 
-keeprunning()
+loop()
