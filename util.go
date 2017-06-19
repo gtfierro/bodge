@@ -80,6 +80,12 @@ func toLValue(value interface{}, L *lua.LState) lua.LValue {
 			table.Append(lua.LNumber(val))
 		}
 		return table
+	case bool:
+		if v {
+			return lua.LNumber(1)
+		} else {
+			return lua.LNumber(0)
+		}
 	default:
 		L.RaiseError("Could not figure out type %T of %+v", value, value)
 	}
