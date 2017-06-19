@@ -23,3 +23,9 @@ Functions to implement:
 ## Concurrency Model
 
 Rather than using Lua coroutines, might be nice to use the `cord` approach
+
+- Do NOT hack the runtime to add locks
+- lua coroutines do the heavy lifting. Wrap the function provided to the subscribe 
+  callback in another function that yields coroutines.
+- need something like "cord" to create new threads, and takes care of 
+  collection the pointers and running through them.

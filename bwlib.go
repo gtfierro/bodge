@@ -18,6 +18,7 @@ func LoadLib(L *lua.LState) {
 	L.SetGlobal("invokePeriodically", L.NewFunction(InvokePeriodically))
 	L.SetGlobal("invokeLater", L.NewFunction(InvokeLater))
 	L.SetGlobal("dumptable", L.NewFunction(DumpTable))
+	L.SetGlobal("nt", L.NewFunction(DoCoroutine))
 }
 
 // Get one message and payload object off of a subscription
@@ -73,17 +74,19 @@ func Subscribe(L *lua.LState) int {
 	if err != nil {
 		L.RaiseError("Error subscribing to %s (%v)", uri, err)
 	}
+
+	// get coroutine
+
 	// new thread?
 	go func() {
-		L := lua.NewState()
-		defer L.Close()
 		for msg := range sub {
+			//msg.Dump()
+			schedMutex.Lock()
 			L.Push(f)
 			L.Push(lua.LString(msg.URI))
 			pushMsg(msg, ponum, L)
-			if err := L.PCall(2, 0, nil); err != nil {
-				L.RaiseError("Error doing func callback (%v)", err)
-			}
+			DoCoroutine(L)
+			schedMutex.Unlock()
 		}
 	}()
 	return 0
@@ -159,16 +162,14 @@ func InvokePeriodically(L *lua.LState) int {
 	}
 
 	go func() {
-		L := lua.NewState()
-		defer L.Close()
 		for _ = range time.Tick(time.Duration(n) * time.Millisecond) {
+			schedMutex.Lock()
 			L.Push(f)
 			for _, arg := range args {
 				L.Push(arg)
 			}
-			if err := L.PCall(nargs-2, 0, nil); err != nil {
-				L.RaiseError("Error doing func callback (%v)", err)
-			}
+			DoCoroutine(L)
+			schedMutex.Unlock()
 		}
 	}()
 	return 0
@@ -202,5 +203,26 @@ func DumpTable(L *lua.LState) int {
 	table.ForEach(func(k, v lua.LValue) {
 		fmt.Printf("%s => %s\n", k, v)
 	})
+	return 0
+}
+
+func DoCoroutine(L *lua.LState) int {
+	nargs := L.GetTop()
+	//fmt.Println("NARGS", nargs)
+	co, _ := L.NewThread()
+	f := L.ToFunction(1)
+	var args []lua.LValue
+	for i := 2; i <= nargs; i++ {
+		args = append(args, L.CheckAny(i))
+	}
+
+	frame := coroutine{
+		L:    co,
+		fxn:  f,
+		name: f.String(),
+		args: args,
+	}
+
+	coroutines <- frame
 	return 0
 }
