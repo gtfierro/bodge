@@ -8,16 +8,23 @@ import (
 )
 
 func LoadLib(L *lua.LState) {
+	// bosswave functions
 	L.SetGlobal("getone", L.NewFunction(GetOne))
 	L.SetGlobal("subscribe", L.NewFunction(Subscribe))
 	L.SetGlobal("publish", L.NewFunction(Publish))
+	L.SetGlobal("persist", L.NewFunction(Persist))
 	L.SetGlobal("query", L.NewFunction(Query))
-	L.SetGlobal("keepRunning", L.NewFunction(KeepRunning))
-	L.SetGlobal("loop", L.NewFunction(KeepRunning))
+
+	// timers
 	L.SetGlobal("sleep", L.NewFunction(Sleep))
 	L.SetGlobal("invokePeriodically", L.NewFunction(InvokePeriodically))
 	L.SetGlobal("invokeLater", L.NewFunction(InvokeLater))
+	L.SetGlobal("loop", L.NewFunction(KeepRunning))
+
+	// utils
 	L.SetGlobal("dumptable", L.NewFunction(DumpTable))
+
+	// do we need these
 	L.SetGlobal("nt", L.NewFunction(DoCoroutine))
 }
 
@@ -115,7 +122,7 @@ func Query(L *lua.LState) int {
 	return 0
 }
 
-func Publish(L *lua.LState) int {
+func publish(L *lua.LState, persist bool) int {
 	uri := L.ToString(1)
 	ponum := L.ToString(2)
 	payload := L.CheckAny(3)
@@ -131,12 +138,20 @@ func Publish(L *lua.LState) int {
 	err := client.Publish(&bw2.PublishParams{
 		URI:            uri,
 		PayloadObjects: []bw2.PayloadObject{po},
+		Persist:        persist,
 	})
 	if err != nil {
 		L.RaiseError("Error while publishing (%v)", err)
 	}
 
 	return 0
+}
+
+func Publish(L *lua.LState) int {
+	return publish(L, false)
+}
+func Persist(L *lua.LState) int {
+	return publish(L, true)
 }
 
 func KeepRunning(L *lua.LState) int {
