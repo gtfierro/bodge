@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	bw2 "github.com/immesys/bw2bind"
 	"github.com/yuin/gopher-lua"
-	bw2 "gopkg.in/immesys/bw2bind.v5"
 	"time"
 )
 

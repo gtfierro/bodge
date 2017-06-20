@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
+	bw2 "github.com/immesys/bw2bind"
 	"github.com/yuin/gopher-lua"
-	bw2 "gopkg.in/immesys/bw2bind.v5"
 )
 
 // takes the contents of the message and pops them onto the Lua stack
@@ -171,4 +172,15 @@ func isTypeDF(testponum, ponum string) bool {
 	_ponum := bw2.FromDotForm(parts[0])
 	_testponum := bw2.FromDotForm(testponum)
 	return isType(_ponum, _testponum, mask)
+}
+
+func resolveURInamespace(uri string) string {
+	chunks := strings.Split(uri, "/")
+	bytes, err := bw2.FromBase64(chunks[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+	alias, _ := client.UnresolveAlias(bytes)
+	chunks[0] = alias
+	return strings.Join(chunks, "/")
 }

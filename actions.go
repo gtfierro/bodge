@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	bw2 "github.com/immesys/bw2bind"
 	"github.com/urfave/cli"
 	"github.com/yuin/gopher-lua"
-	bw2 "gopkg.in/immesys/bw2bind.v5"
 	"io/ioutil"
 	"log"
 	"os"
@@ -25,7 +25,7 @@ func doInterpreter(c *cli.Context) error {
 	startScheduler(L)
 	LoadLib(L)
 
-	if c.NArg() != 2 {
+	if c.NArg() == 0 {
 		log.Fatal(doREPL(L))
 		return nil
 	}
@@ -50,7 +50,7 @@ func doURI(c *cli.Context) error {
 	client.SetEntityFileOrExit(c.String("entity"))
 	client.OverrideAutoChainTo(true)
 
-	if c.NArg() == 0 {
+	if c.NArg() != 2 {
 		log.Fatal("Need 2 arguments: <file> <uri to publish>")
 	}
 	path := c.Args().Get(0)
@@ -93,6 +93,31 @@ func doCat(c *cli.Context) error {
 	po := msg.GetOnePODF("64.0.2.0/24")
 	luafile := po.(bw2.TextPayloadObject).Value()
 	fmt.Println(luafile)
+
+	return nil
+}
+
+func doLs(c *cli.Context) error {
+	// bw2 client
+	client = bw2.ConnectOrExit(c.String("agent"))
+	client.SetEntityFileOrExit(c.String("entity"))
+	client.OverrideAutoChainTo(true)
+
+	if c.NArg() != 1 {
+		log.Fatal("Need 1 argument: <uri to ls>")
+	}
+	msgs, err := client.Query(&bw2.QueryParams{
+		URI: c.Args().Get(0),
+	})
+	if err != nil {
+		log.Fatalf("Could not LS %s: %s", c.Args().Get(0), err)
+	}
+	for msg := range msgs {
+		po := msg.GetOnePODF("64.0.2.0/24")
+		if po != nil {
+			fmt.Println(resolveURInamespace(msg.URI))
+		}
+	}
 
 	return nil
 }
