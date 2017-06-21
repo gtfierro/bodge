@@ -10,6 +10,9 @@ import (
 	"os"
 )
 
+var _NARGS int
+var _ARGS []string
+
 func init() {
 	bw2.SilenceLog()
 }
@@ -30,6 +33,9 @@ func doInterpreter(c *cli.Context) error {
 		return nil
 	}
 	path := c.Args().Get(0)
+
+	_NARGS = c.NArg() - 1
+	_ARGS = c.Args()[1:]
 
 	// check if the file exists locally
 	if _, err := os.Stat(path); os.IsNotExist(err) {

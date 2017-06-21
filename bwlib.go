@@ -23,6 +23,8 @@ func LoadLib(L *lua.LState) {
 
 	// utils
 	L.SetGlobal("dumptable", L.NewFunction(DumpTable))
+	L.SetGlobal("nargs", L.NewFunction(NArgs))
+	L.SetGlobal("arg", L.NewFunction(Arg))
 
 	// do we need these
 	L.SetGlobal("nt", L.NewFunction(DoCoroutine))
@@ -219,6 +221,28 @@ func DumpTable(L *lua.LState) int {
 		fmt.Printf("%s => %s\n", k, v)
 	})
 	return 0
+}
+
+func NArgs(L *lua.LState) int {
+	L.Push(lua.LNumber(_NARGS))
+	return 1
+}
+
+func Arg(L *lua.LState) int {
+	nargs := L.GetTop()
+	if nargs < 1 {
+		L.Push(lua.LNil)
+	}
+	n := L.ToNumber(1)
+	_n := int(n)
+	// 1-indexed
+	if _n > 0 && _n-1 <= len(_ARGS) {
+		L.Push(lua.LString(_ARGS[_n-1]))
+	} else {
+		L.Push(lua.LNil)
+	}
+
+	return 1
 }
 
 func DoCoroutine(L *lua.LState) int {
