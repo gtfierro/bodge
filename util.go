@@ -58,6 +58,8 @@ func toLValue(value interface{}, L *lua.LState) lua.LValue {
 		return lua.LString(v)
 	case int:
 		return lua.LNumber(float64(v))
+	case uint:
+		return lua.LNumber(float64(v))
 	case uint64:
 		return lua.LNumber(float64(v))
 	case int64:
