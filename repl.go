@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/chzyer/readline"
 	"github.com/yuin/gopher-lua"
 	"github.com/yuin/gopher-lua/parse"
@@ -20,7 +21,8 @@ func doREPL(L *lua.LState) error {
 	for {
 		if str, err := loadline(rl, L); err == nil {
 			if err := L.DoString(str); err != nil {
-				return err
+				fmt.Println(err)
+				continue
 			}
 		} else { // error on loadline
 			return err
