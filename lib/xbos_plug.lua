@@ -9,8 +9,8 @@ local new = function(uri)
         _power = nil,
         _cumulative = nil
     }
-    print("Tstat at", uri)
-    subscribe(uri .. "signal/info", "2.1.1.2", function(uri, msg)
+    print("Plug at", uri)
+    subscribe(uri .. "/signal/info", "2.1.1.2", function(uri, msg)
         obj._state = msg["state"]
         obj._voltage = msg["voltage"]
         obj._current = msg["current"]
@@ -24,7 +24,7 @@ local state = function(self, val)
     if val == nil then
         return self._state
     end
-    publish("410testbed/devices/tplink2/s.tplink.v0/0/i.xbos.plug/slot/state", "2.1.1.2", {state=val})
+    publish(self.uri .. "/slot/state", "2.1.1.2", {state=val})
     return self._state
 end
 mod.state = state
