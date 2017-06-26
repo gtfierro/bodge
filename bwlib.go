@@ -25,6 +25,7 @@ func LoadLib(L *lua.LState) {
 	L.SetGlobal("dumptable", L.NewFunction(DumpTable))
 	L.SetGlobal("nargs", L.NewFunction(NArgs))
 	L.SetGlobal("arg", L.NewFunction(Arg))
+	L.SetGlobal("uriRequire", L.NewFunction(URIRequire))
 
 	// do we need these
 	L.SetGlobal("nt", L.NewFunction(DoCoroutine))
@@ -242,6 +243,20 @@ func Arg(L *lua.LState) int {
 		L.Push(lua.LNil)
 	}
 
+	return 1
+}
+
+func URIRequire(L *lua.LState) int {
+	nargs := L.GetTop()
+	if nargs < 1 {
+		L.RaiseError("URIRequire needs argument")
+	}
+	uri := L.ToString(1)
+	file, err := readURI(uri)
+	if err != nil {
+		L.RaiseError("Error reading URI %s (%v)", uri, err)
+	}
+	L.DoString(file)
 	return 1
 }
 

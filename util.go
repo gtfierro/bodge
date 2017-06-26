@@ -188,3 +188,14 @@ func resolveURInamespace(uri string) string {
 	chunks[0] = alias
 	return strings.Join(chunks, "/")
 }
+
+func readURI(uri string) (string, error) {
+	msg, err := client.QueryOne(&bw2.QueryParams{
+		URI: uri,
+	})
+	if err != nil {
+		return "", err
+	}
+	po := msg.GetOnePODF("64.0.2.0/24")
+	return po.(bw2.TextPayloadObject).Value(), nil
+}
