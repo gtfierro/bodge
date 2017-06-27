@@ -10,6 +10,31 @@ Bodge extends the [Lua](https://github.com/yuin/gopher-lua) embedded programming
 - task scheduling
 - ability to execute Bodge code from a file, interactive command line or a BOSSWAVE URI
 
+### Usage
+
+```
+NAME:
+   bodge - Simple BOSSWAVE Lua scripts for interaction, exploration and rule building
+
+USAGE:
+   bodge [global options] command [command options] [arguments...]
+
+VERSION:
+   0.2.0
+
+COMMANDS:
+     publish, p, pub  Publish a file to a given URI
+     cat              Cat a file on a given URI
+     ls               List bodge files
+     help, h          Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --agent value, -a value   Local BOSSWAVE Agent (default: "127.0.0.1:28589") [$BW2_AGENT]
+   --entity value, -e value  The entity to use [$BW2_DEFAULT_ENTITY]
+   --help, -h                show help
+   --version, -v             print the version
+```
+
 ### Installation
 
 Bodge can be installed simply by running
