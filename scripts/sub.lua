@@ -3,11 +3,11 @@ uri = "ciee/*/operative"
 function trigger(uri)
     count["count"] = count["count"] + 1
 end
-subscribe(uri, "", trigger)
+bw.subscribe(uri, "", trigger)
 
 
-invokePeriodically(1000, function()
+bw.invokePeriodically(1000, function()
     print("count", count["count"])
 end)
 
-loop()
+bw.loop()

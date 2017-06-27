@@ -1,3 +1,4 @@
+local bw = require('bw')
 local mod = {}
 
 local new = function(uri)
@@ -10,7 +11,7 @@ local new = function(uri)
         _cumulative = nil
     }
     print("Plug at", uri)
-    subscribe(uri .. "/signal/info", "2.1.1.2", function(uri, msg)
+    bw.subscribe(uri .. "/signal/info", "2.1.1.2", function(uri, msg)
         obj._state = msg["state"]
         obj._voltage = msg["voltage"]
         obj._current = msg["current"]
@@ -24,7 +25,7 @@ local state = function(self, val)
     if val == nil then
         return self._state
     end
-    publish(self.uri .. "/slot/state", "2.1.1.2", {state=val})
+    bw.publish(self.uri .. "/slot/state", "2.1.1.2", {state=val})
     return self._state
 end
 mod.state = state

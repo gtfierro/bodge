@@ -1,3 +1,4 @@
+local bw = require('bw')
 local mod = {}
 
 local new = function(uri)
@@ -13,7 +14,7 @@ local new = function(uri)
         _state = nil
     }
     print("Tstat at", uri)
-    subscribe(uri .. "/signal/info", "2.1.1.0", function(uri, msg)
+    bw.subscribe(uri .. "/signal/info", "2.1.1.0", function(uri, msg)
         obj._state = msg["state"]
         obj._temperature = msg["temperature"]
         obj._relative_humidity = msg["relative_humidity"]
@@ -46,7 +47,7 @@ mod.state = state
 -- read/write state
 local heating_setpoint = function(self, val)
     if val ~= nil then
-        publish(self.uri.."/slot/state","2.1.1.0",{heating_setpoint=val})
+        bw.publish(self.uri.."/slot/state","2.1.1.0",{heating_setpoint=val})
     end
     return self._heating_setpoint
 end
@@ -54,7 +55,7 @@ mod.heating_setpoint = heating_setpoint
 
 local cooling_setpoint = function(self, val)
     if val ~= nil then
-        publish(self.uri.."/slot/state","2.1.1.0",{cooling_setpoint=val})
+        bw.publish(self.uri.."/slot/state","2.1.1.0",{cooling_setpoint=val})
     end
     return self._cooling_setpoint
 end
@@ -62,7 +63,7 @@ mod.cooling_setpoint = cooling_setpoint
 
 local override = function(self, val)
     if val ~= nil then
-        publish(self.uri.."/slot/state","2.1.1.0",{override=val})
+        bw.publish(self.uri.."/slot/state","2.1.1.0",{override=val})
     end
     return self._override
 end
@@ -70,7 +71,7 @@ mod.override = override
 
 local fan = function(self, val)
     if val ~= nil then
-        publish(self.uri.."/slot/state","2.1.1.0",{fan=val})
+        bw.publish(self.uri.."/slot/state","2.1.1.0",{fan=val})
     end
     return self._fan
 end
@@ -78,7 +79,7 @@ mod.fan = fan
 
 local mode = function(self, val)
     if val ~= nil then
-        publish(self.uri.."/slot/state","2.1.1.0",{mode=val})
+        bw.publish(self.uri.."/slot/state","2.1.1.0",{mode=val})
     end
     return self._mode
 end
