@@ -9,6 +9,8 @@ import (
 	"github.com/yuin/gopher-lua"
 )
 
+var jobs []*gocron.Job
+
 // This is how the timer interface will work
 // Time Parsing:
 //  - space-delimited strings.
@@ -27,11 +29,11 @@ var _timeformats = []string{
 	"15:04:05",
 	"15:04",
 	"15",
-	"2/1/2006 3:04:05 PM",
-	"2/1 3:04:05 PM",
-	"3:04:05 PM",
-	"3:04 PM",
-	"3 PM",
+	"2/1/2006 3:04:05PM",
+	"2/1 3:04:05PM",
+	"3:04:05PM",
+	"3:04PM",
+	"3PM",
 }
 var _weekdays = []time.Weekday{
 	time.Monday,
@@ -91,7 +93,9 @@ func (sched *schedule) Schedule(task func()) {
 	if len(sched.weekdays) == 0 {
 		for _, tstr := range sched.times {
 			fmt.Println("Scheduling Daily Timer At", tstr)
-			gocron.Every(1).Day().At(tstr).Do(task)
+			j := gocron.Every(1).Day().At(tstr)
+			j.Do(task)
+			jobs = append(jobs, j)
 		}
 		return
 	}
@@ -101,22 +105,24 @@ func (sched *schedule) Schedule(task func()) {
 			job := gocron.Every(1)
 			switch weekday {
 			case time.Monday:
-				job.Monday()
+				job = job.Monday()
 			case time.Tuesday:
-				job.Tuesday()
+				job = job.Tuesday()
 			case time.Wednesday:
-				job.Wednesday()
+				job = job.Wednesday()
 			case time.Thursday:
-				job.Thursday()
+				job = job.Thursday()
 			case time.Friday:
-				job.Friday()
+				job = job.Friday()
 			case time.Saturday:
-				job.Saturday()
+				job = job.Saturday()
 			case time.Sunday:
-				job.Sunday()
+				job = job.Sunday()
 			}
 			fmt.Println("Scheduling Weekly timer At", weekday, tstr)
-			job.At(tstr).Do(task)
+			job = job.At(tstr)
+			jobs = append(jobs, job)
+			job.Do(task)
 		}
 	}
 
@@ -204,9 +210,12 @@ func parseTerm(term string, sched *schedule) error {
 }
 
 func startCronScheduler(L *lua.LState) {
-	time.AfterFunc(5*time.Second, func() {
-		gocron.RunAll()
-	})
+	go func() {
+		for _ = range time.Tick(5 * time.Second) {
+			_, t := gocron.NextRun()
+			fmt.Println(t, time.Now())
+		}
+	}()
 	go func() {
 		<-gocron.Start()
 	}()
