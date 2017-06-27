@@ -26,6 +26,7 @@ func doInterpreter(c *cli.Context) error {
 	L := lua.NewState()
 	defer L.Close()
 	startScheduler(L)
+	startCronScheduler(L)
 	LoadLib(L)
 
 	if c.NArg() == 0 {

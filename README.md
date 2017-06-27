@@ -25,7 +25,48 @@ Functions to implement:
 Rather than using Lua coroutines, might be nice to use the `cord` approach
 
 - Do NOT hack the runtime to add locks
-- lua coroutines do the heavy lifting. Wrap the function provided to the subscribe 
+- lua coroutines do the heavy lifting. Wrap the function provided to the subscribe
   callback in another function that yields coroutines.
-- need something like "cord" to create new threads, and takes care of 
+- need something like "cord" to create new threads, and takes care of
   collection the pointers and running through them.
+
+## Clock/Date Scheduling
+
+We want something that is human readable and allows the expression of the following:
+- events like
+    - every Monday
+    - next Monday
+    - every day at 10:30am
+    - every weekday at 10:30am
+    - every weekend at 10:30am
+    - every day
+    - every hour
+    - every minute
+- API?
+    ```lua
+    -- next monday
+    on("1/30/2017", cb)
+
+    -- every Monday
+    every("monday", cb)
+
+    -- every day at 10:30
+    every("10:30am", cb)
+
+    -- every weekday at 10:30am
+    every("weekday 10:30am", cb)
+
+    -- every weekend at 10:30am
+    every("weekend 10:30am", cb)
+
+    -- every day (00:00)
+    every("day", cb)
+
+    -- every hour (00:00)
+    every("hour", cb)
+
+    -- every minute (00:00)
+    every("minute", cb)
+    ```
+
+- also have a "list timers" so we can see what's running and when it will next trigger
