@@ -2,7 +2,7 @@
 
 **Bodge**: *Make or repair (something) badly or clumsily.*
 
-Bodge is a "batteries included" DSL and execution environment for prototyping and scheduling BOSSWAVE interactions. 
+Bodge is a "batteries included" DSL and execution environment for prototyping and scheduling BOSSWAVE interactions.
 
 Bodge extends the [Lua](https://github.com/yuin/gopher-lua) embedded programming language with:
 - `bw`, a module for BOSSWAVE operations
@@ -48,6 +48,11 @@ end)
 bw.loop()
 ```
 
+## API
+
+* [BOSSWAVE operations](#BOSSWAVE-Operations)
+
+
 ## BOSSWAVE Operations
 
 Bodge implements the following BOSSWAVE operations
@@ -60,7 +65,7 @@ bw.subscribe(uri, ponum, cb)
 
 Subscribes to a BOSSWAVE resource and invokes a callback on every received message.
 
-* `uri`: is a string representing a BOSSWAVE URI. 
+* `uri`: is a string representing a BOSSWAVE URI.
     * Examples:
         * `ciee/*`
         * `scratch.ns/devices/s.venstar/+/i.xbos.thermostat/signal/info`
