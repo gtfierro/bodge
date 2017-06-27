@@ -50,7 +50,7 @@ bw.loop()
 
 ## API
 
-* [BOSSWAVE operations](#BOSSWAVE-Operations)
+* [BOSSWAVE operations](#bosswave-operations)
 
 
 ## BOSSWAVE Operations
