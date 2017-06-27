@@ -7,29 +7,30 @@ import (
 	"time"
 )
 
-func LoadLib(L *lua.LState) {
+var exports = map[string]lua.LGFunction{
 	// bosswave functions
-	L.SetGlobal("getone", L.NewFunction(GetOne))
-	L.SetGlobal("subscribe", L.NewFunction(Subscribe))
-	L.SetGlobal("publish", L.NewFunction(Publish))
-	L.SetGlobal("persist", L.NewFunction(Persist))
-	L.SetGlobal("query", L.NewFunction(Query))
-
+	"getone":    GetOne,
+	"subscribe": Subscribe,
+	"publish":   Publish,
+	"persist":   Persist,
+	"query":     Query,
 	// timers
-	L.SetGlobal("sleep", L.NewFunction(Sleep))
-	L.SetGlobal("invokePeriodically", L.NewFunction(InvokePeriodically))
-	L.SetGlobal("invokeLater", L.NewFunction(InvokeLater))
-	L.SetGlobal("loop", L.NewFunction(KeepRunning))
-	L.SetGlobal("every", L.NewFunction(ScheduleEvery))
-
+	"sleep":              Sleep,
+	"invokePeriodically": InvokePeriodically,
+	"invokeLater":        InvokeLater,
+	"loop":               KeepRunning,
+	"every":              ScheduleEvery,
 	// utils
-	L.SetGlobal("dumptable", L.NewFunction(DumpTable))
-	L.SetGlobal("nargs", L.NewFunction(NArgs))
-	L.SetGlobal("arg", L.NewFunction(Arg))
-	L.SetGlobal("uriRequire", L.NewFunction(URIRequire))
+	"dumptable":  DumpTable,
+	"nargs":      NArgs,
+	"arg":        Arg,
+	"uriRequire": URIRequire,
+}
 
-	// do we need these
-	L.SetGlobal("nt", L.NewFunction(DoCoroutine))
+func LoadLib(L *lua.LState) int {
+	mod := L.SetFuncs(L.NewTable(), exports)
+	L.Push(mod)
+	return 1
 }
 
 // Get one message and payload object off of a subscription

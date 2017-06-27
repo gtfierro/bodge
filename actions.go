@@ -27,7 +27,8 @@ func doInterpreter(c *cli.Context) error {
 	defer L.Close()
 	startScheduler(L)
 	startCronScheduler(L)
-	LoadLib(L)
+	L.PreloadModule("bw", LoadLib)
+	L.DoString("bw = require('bw')")
 
 	if c.NArg() == 0 {
 		log.Fatal(doREPL(L))
