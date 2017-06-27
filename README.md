@@ -1,72 +1,57 @@
-# BW Lua
+# Bodge
 
-Functions to implement:
-- [X] query: return a list of messages
-- [ ] publish with persist
-- [ ] stats:
-    - [ ] port https://github.com/montanaflynn/stats
-- [ ] kv store API:
-    - [ ] port leveldb golang bindings. Get persistent storage for your script!
-- [ ] memory-mapped devices:
-    - for each standard xbos interface, make a distributed object that is synchronized with the device
-      ```lua
-      local tstat = Thermostat:new("uri of the thermostat iface")
-      tstat.get_temperature()
-      tstat.set_heating_setpoint(70)
-      ```
-    - can we get the equivalent of overriding `__setattr__` in Python?
-- [ ] Deploy to, import libraries, run code on BOSSWAVE URIs
-- [X] more timer methods:
-    - [X] fire a callback periodically (e.g. `invokePeriodically`)
-    - [X] fire a callback after a set amount of time
+**Bodge**: *Make or repair (something) badly or clumsily.*
 
-## Concurrency Model
+Bodge is a "batteries included" DSL and execution environment for prototyping and scheduling BOSSWAVE interactions. 
 
-Rather than using Lua coroutines, might be nice to use the `cord` approach
+Bodge extends the [Lua](https://github.com/yuin/gopher-lua) embedded programming language with:
+- `bw`, a module for BOSSWAVE operations
+- basic timer functionality
+- task scheduling
+- ability to execute Bodge code from a file, interactive command line or a BOSSWAVE URI
 
-- Do NOT hack the runtime to add locks
-- lua coroutines do the heavy lifting. Wrap the function provided to the subscribe
-  callback in another function that yields coroutines.
-- need something like "cord" to create new threads, and takes care of
-  collection the pointers and running through them.
+### Installation
 
-## Clock/Date Scheduling
+Bodge can be installed simply by running
 
-We want something that is human readable and allows the expression of the following:
-- events like
-    - every Monday
-    - next Monday
-    - every day at 10:30am
-    - every weekday at 10:30am
-    - every weekend at 10:30am
-    - every day
-    - every hour
-    - every minute
-- API?
-    ```lua
-    -- next monday
-    on("1/30/2017", cb)
+```
+go get github.com/gtfierro/bodge
+go install github.com/gtfierro/bodge
+```
 
-    -- every Monday
-    every("monday", cb)
+Then, to run Bodge, just run
 
-    -- every day at 10:30
-    every("10:30am", cb)
+```
+bodge
+```
 
-    -- every weekday at 10:30am
-    every("weekday 10:30am", cb)
+All library functionality is provided through a `bw` module. This is imported automatically into the Bodge runtime, but you can also explicitly run
 
-    -- every weekend at 10:30am
-    every("weekend 10:30am", cb)
+```lua
+local bw = require('bw')
+```
 
-    -- every day (00:00)
-    every("day", cb)
+## BOSSWAVE Operations
 
-    -- every hour (00:00)
-    every("hour", cb)
+Bodge implements the following BOSSWAVE operations
 
-    -- every minute (00:00)
-    every("minute", cb)
-    ```
+### Subscribe
 
-- also have a "list timers" so we can see what's running and when it will next trigger
+```lua
+bw.subscribe(uri, ponum, cb)
+```
+
+* `uri`: is a string representing a BOSSWAVE URI. 
+    * Examples:
+        * `ciee/*`
+        * `scratch.ns/devices/s.venstar/+/i.xbos.thermostat/signal/info`
+* `ponum`: is a string of the dotted form of which payload objects should be matched. This can optionally use the prefix notation. 
+    * Examples:
+        * `2.0.0.0/8`
+        * `64.0.0.1`
+* `cb`: this is a Lua function called upon every received message that takes up to 2 arguments: `uri` (the URI of the published message) and `msg` (the contents of the published message). Bodge makes a decent effort to convert messages into Lua types, regardless of the encoding. It currently translates MsgPack, JSON and YAML, but can be easily extended to support more formats.
+
+
+## Concurrency
+
+Bodge is single threaded, so concurrent manipulation of data structures is safe.
