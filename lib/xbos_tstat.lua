@@ -45,6 +45,11 @@ end
 mod.state = state
 
 -- read/write state
+local write = function(self, val)
+    bw.publish(self.uri.."/slot/state","2.1.1.0",val)
+end
+mod.write = write
+
 local heating_setpoint = function(self, val)
     if val ~= nil then
         bw.publish(self.uri.."/slot/state","2.1.1.0",{heating_setpoint=val})
