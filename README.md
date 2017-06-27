@@ -66,7 +66,7 @@ bw.loop()
     * [nargs](#nargs)
     * [arg](#arg)
     * [uriRequire](#urirequire)
-# [Scheduler](#scheduler)
+* [Scheduler](#scheduler)
     * [every](#every)
 
 
