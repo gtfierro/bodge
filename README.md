@@ -51,6 +51,21 @@ bw.loop()
 ## API
 
 * [BOSSWAVE operations](#bosswave-operations)
+    * [subscribe](#subscribe)
+    * [query](#query)
+    * [getone](#getone)
+    * [publish](#publish)
+    * [persist](#persist)
+* [Timers](#timers)
+    * [sleep](#sleep)
+    * [invokePeriodically](#invokeperiodically)
+    * [invokeLater](#invokelater)
+    * [loop](#loop)
+* [Utilities](#utiilies)
+    * [dumptable](#dumptable)
+    * [nargs](#nargs)
+    * [arg](#arg)
+    * [uriRequire](#urirequire)
 
 
 ## BOSSWAVE Operations
