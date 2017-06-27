@@ -66,6 +66,8 @@ bw.loop()
     * [nargs](#nargs)
     * [arg](#arg)
     * [uriRequire](#urirequire)
+# [Scheduler](#scheduler)
+    * [every](#every)
 
 
 ## BOSSWAVE Operations
@@ -190,7 +192,7 @@ bw.loop()
 ### InvokeLater
 
 ```lua
-bw.invokeLater(period, cb, arg1, arg2)
+bw.invokeLater(period, cb, ...)
 ```
 
 Like `invokePeriodically`, but only executes once.
@@ -253,3 +255,15 @@ tstat_class = bw.uriRequire('bodge/lib/xbos_tstat.lua')
 
 my_tstat = tstat_class("uri for my tstat")
 ```
+
+## Scheduler
+
+```lua
+bw.every(spec, cb, ...)
+```
+
+This function executes the callback (with any provided arguments) according to the schedule specification string `spec`.
+
+Bodge supports the following specifications:
+
+## XBOS Devices
