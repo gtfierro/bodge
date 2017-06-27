@@ -210,12 +210,12 @@ func parseTerm(term string, sched *schedule) error {
 }
 
 func startCronScheduler(L *lua.LState) {
-	go func() {
-		for _ = range time.Tick(5 * time.Second) {
-			_, t := gocron.NextRun()
-			fmt.Println(t, time.Now())
-		}
-	}()
+	//go func() {
+	//	for _ = range time.Tick(5 * time.Second) {
+	//		_, t := gocron.NextRun()
+	//		fmt.Println(t, time.Now())
+	//	}
+	//}()
 	go func() {
 		<-gocron.Start()
 	}()
