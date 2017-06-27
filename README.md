@@ -48,6 +48,46 @@ end)
 bw.loop()
 ```
 
+## Example
+
+Here is a sample weekday and weekend schedule implemented using the Bodge API
+
+```lua
+-- 410testbed_schedule.lua
+-- run using "bodge 410testbed_schedule.lua"
+tstat_class = bw.uriRequire('bodge/lib/xbos_tstat.lua')
+tstat1 = tstat_class("410testbed/devices/venstar/s.venstar/420lab/i.xbos.thermostat")
+
+plug_class = bw.uriRequire('bodge/lib/xbos_plug.lua')
+plug1 = plug_class("410testbed/devices/tplink2/s.tplink.v0/0/i.xbos.plug")
+
+bw.every("weekday 07:30", function()
+    tstat1:heating_setpoint(72)
+    tstat1:cooling_setpoint(76)
+end)
+
+bw.every("weekday 12:00", function()
+    tstat1:heating_setpoint(70)
+    tstat1:cooling_setpoint(80)
+end)
+
+bw.every("weekday 13:00", function()
+    tstat1:heating_setpoint(72)
+    tstat1:cooling_setpoint(86)
+end)
+
+bw.every("weekday 18:00", function()
+    tstat1:heating_setpoint(50)
+    tstat1:cooling_setpoint(90)
+    plug1:state(0) -- turn off plug at 6pm
+end)
+
+bw.every("weekend 00:00", function()
+    tstat1:heating_setpoint(50)
+    tstat1:cooling_setpoint(90)
+end)
+```
+
 ## API
 
 * [BOSSWAVE operations](#bosswave-operations)
@@ -68,7 +108,7 @@ bw.loop()
     * [uriRequire](#urirequire)
 * [Scheduler](#scheduler)
     * [every](#every)
-
+* [XBOS Devices](#xbos-devices)
 
 ## BOSSWAVE Operations
 
@@ -326,43 +366,4 @@ print("cooling setpoint", tstat1:cooling_setpoint())
 
 -- can also set multiple fields concurrently
 tstat1:write({fan=1,mode=3})
-```
-
-## Putting it all together
-
-Here is a sample weekday and weekend schedule implemented using what we know so far
-
-``lua
-tstat_class = bw.uriRequire('bodge/lib/xbos_tstat.lua')
-tstat1 = tstat_class("410testbed/devices/venstar/s.venstar/420lab/i.xbos.thermostat")
-
-plug_class = bw.uriRequire('bodge/lib/xbos_plug.lua')
-plug1 = plug_class("410testbed/devices/tplink2/s.tplink.v0/0/i.xbos.plug")
-
-bw.every("weekday 07:30", function()
-    tstat1:heating_setpoint(72)
-    tstat1:cooling_setpoint(76)
-end)
-
-bw.every("weekday 12:00", function()
-    tstat1:heating_setpoint(70)
-    tstat1:cooling_setpoint(80)
-end)
-
-bw.every("weekday 13:00", function()
-    tstat1:heating_setpoint(72)
-    tstat1:cooling_setpoint(86)
-end)
-
-bw.every("weekday 18:00", function()
-    tstat1:heating_setpoint(50)
-    tstat1:cooling_setpoint(90)
-    plug1:state(0) -- turn off plug at 6pm
-end)
-
-bw.every("weekend 00:00", function()
-    tstat1:heating_setpoint(50)
-    tstat1:cooling_setpoint(90)
-end)
-
 ```
