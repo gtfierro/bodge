@@ -13,7 +13,7 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "bodge"
-	app.Version = "0.1.1"
+	app.Version = "0.2.0"
 	app.Usage = "Simple BOSSWAVE Lua scripts for interaction, exploration and rule building"
 	app.Action = doInterpreter
 	app.Flags = []cli.Flag{
