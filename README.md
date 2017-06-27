@@ -286,3 +286,83 @@ Bodge supports the following specifications:
 * **coming soon**: specific dates e.g. "run Wednesday 28 June, 3:30pm"
 
 ## XBOS Devices
+
+Bodge makes it easy to write wrapper classes for common interactions.
+One example of this are XBOS devices such as plugs and thermostats.
+
+There are currently two such implementations:
+* [XBOS plug](https://github.com/gtfierro/bodge/blob/master/lib/xbos_plug.lua) published at `bodge/lib/xbos_plug.lua`
+* [XBOS thermostat](https://github.com/gtfierro/bodge/blob/master/lib/xbos_tstat.lua) published at `bodge/lib/xbos_tstat.lua`
+
+Basic usage is as follows:
+
+```lua
+-- uses https://github.com/SoftwareDefinedBuildings/XBOS/blob/master/interfaces/xbos_thermostat.yaml
+tstat_class = bw.uriRequire('bodge/lib/xbos_tstat.lua')
+
+-- instantiate with the base URI of the xbos tstat interface
+-- In the future, this URI will come from a Brick query
+tstat1 = tstat_class("410testbed/devices/venstar/s.venstar/420lab/i.xbos.thermostat")
+
+-- wait until the thermostat publishes and we get a state
+while tstat1:heating_setpoint() == nil do
+    bw.sleep(1000)
+end
+
+-- get the heating and cooling setpoints
+hsp = tstat1:heating_setpoint()
+csp = tstat1:cooling_setpoint()
+print("heating setpoint", hsp)
+print("cooling setpoint", csp)
+
+-- increase the band by 2 degrees on either side
+tstat1:heating_setpoint(hsp-2)
+tstat1:cooling_setpoint(csp+2)
+
+-- wait 10 seconds for the report and test that it worked
+bw.sleep(10*1000)
+print("heating setpoint", tstat1:heating_setpoint())
+print("cooling setpoint", tstat1:cooling_setpoint())
+
+-- can also set multiple fields concurrently
+tstat1:write({fan=1,mode=3})
+```
+
+## Putting it all together
+
+Here is a sample weekday and weekend schedule implemented using what we know so far
+
+``lua
+tstat_class = bw.uriRequire('bodge/lib/xbos_tstat.lua')
+tstat1 = tstat_class("410testbed/devices/venstar/s.venstar/420lab/i.xbos.thermostat")
+
+plug_class = bw.uriRequire('bodge/lib/xbos_plug.lua')
+plug1 = plug_class("410testbed/devices/tplink2/s.tplink.v0/0/i.xbos.plug")
+
+bw.every("weekday 07:30", function()
+    tstat1:heating_setpoint(72)
+    tstat1:cooling_setpoint(76)
+end)
+
+bw.every("weekday 12:00", function()
+    tstat1:heating_setpoint(70)
+    tstat1:cooling_setpoint(80)
+end)
+
+bw.every("weekday 13:00", function()
+    tstat1:heating_setpoint(72)
+    tstat1:cooling_setpoint(86)
+end)
+
+bw.every("weekday 18:00", function()
+    tstat1:heating_setpoint(50)
+    tstat1:cooling_setpoint(90)
+    plug1:state(0) -- turn off plug at 6pm
+end)
+
+bw.every("weekend 00:00", function()
+    tstat1:heating_setpoint(50)
+    tstat1:cooling_setpoint(90)
+end)
+
+```
