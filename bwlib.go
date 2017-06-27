@@ -20,6 +20,7 @@ func LoadLib(L *lua.LState) {
 	L.SetGlobal("invokePeriodically", L.NewFunction(InvokePeriodically))
 	L.SetGlobal("invokeLater", L.NewFunction(InvokeLater))
 	L.SetGlobal("loop", L.NewFunction(KeepRunning))
+	L.SetGlobal("every", L.NewFunction(ScheduleEvery))
 
 	// utils
 	L.SetGlobal("dumptable", L.NewFunction(DumpTable))
@@ -213,6 +214,31 @@ func InvokeLater(L *lua.LState) int {
 			L.RaiseError("Error doing func callback (%v)", err)
 		}
 	})
+	return 0
+}
+
+func ScheduleEvery(L *lua.LState) int {
+	nargs := L.GetTop()
+	if nargs < 2 {
+		L.RaiseError("Need >=2 arguments: every(sched string, function)")
+	}
+	schedString := L.ToString(1)
+	f := L.ToFunction(2)
+	var args []lua.LValue
+	for i := 3; i <= nargs; i++ {
+		args = append(args, L.CheckAny(i))
+	}
+	task := func() {
+		fmt.Println("STARTING TASK")
+		schedMutex.Lock()
+		L.Push(f)
+		for _, arg := range args {
+			L.Push(arg)
+		}
+		DoCoroutine(L)
+		schedMutex.Unlock()
+	}
+	ScheduleTask(schedString, task)
 	return 0
 }
 

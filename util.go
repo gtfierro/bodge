@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	bw2 "github.com/immesys/bw2bind"
 	"github.com/yuin/gopher-lua"
@@ -198,4 +200,30 @@ func readURI(uri string) (string, error) {
 	}
 	po := msg.GetOnePODF("64.0.2.0/24")
 	return po.(bw2.TextPayloadObject).Value(), nil
+}
+
+// from https://github.com/immesys/bw2/blob/dev/util/util.go#L200
+func ParseDuration(s string) (*time.Duration, error) {
+	if s == "" {
+		return nil, nil
+	}
+	pat := regexp.MustCompile(`^(\d+y)?(\d+d)?(\d+h)?(\d+m)?(\d+s)?$`)
+	res := pat.FindStringSubmatch(s)
+	if res == nil {
+		return nil, fmt.Errorf("Invalid duration")
+	}
+	res = res[1:]
+	sec := int64(0)
+	for idx, mul := range []int64{365 * 24 * 60 * 60, 24 * 60 * 60, 60 * 60, 60, 1} {
+		if res[idx] != "" {
+			key := res[idx][:len(res[idx])-1]
+			v, e := strconv.ParseInt(key, 10, 64)
+			if e != nil { //unlikely
+				return nil, e
+			}
+			sec += v * mul
+		}
+	}
+	rv := time.Duration(sec) * time.Second
+	return &rv, nil
 }
