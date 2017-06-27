@@ -265,5 +265,24 @@ bw.every(spec, cb, ...)
 This function executes the callback (with any provided arguments) according to the schedule specification string `spec`.
 
 Bodge supports the following specifications:
+* Day/Hour/Minute/Second periodic, specified using Go-style duration strings:
+    * Executed from the time that the script is run -- NOT aligned!
+    * Examples:
+        * every 2 hours: `2h`
+        * every day: `1d`
+* Day/time periodic:
+    * Can use the following to indicate what days the schedule runs:
+        * `monday`,`tuesday`, etc... (runs on that day of the week)
+        * `weekday`, `weekend` (runs on weekdays, weekends)
+    * Within a day, can specify which times to execute:
+        * uses 24-hour clock. Does not currently support seconds (rounds up to nearest minute)
+        * needs leading zeros for times before 10am
+        * `15:30` (run at 3:30pm)
+        * `07:00` (run at 7am)
+    * Combine these into single schedule specs:
+        * Every Weekday at 7am and 8am: `weekday 07:00 08:00`
+        * Weekends at 6pm: `weekend 18:00`
+        * Mondays and Wednesdays at 3:30: `monday wednesday 15:30`
+* **coming soon**: specific dates e.g. "run Wednesday 28 June, 3:30pm"
 
 ## XBOS Devices

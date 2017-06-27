@@ -230,7 +230,6 @@ func ScheduleEvery(L *lua.LState) int {
 		args = append(args, L.CheckAny(i))
 	}
 	task := func() {
-		fmt.Println("STARTING TASK")
 		schedMutex.Lock()
 		L.Push(f)
 		for _, arg := range args {
