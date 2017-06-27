@@ -18,6 +18,10 @@ import (
 // - uri it was published on
 // -
 func pushMsg(msg *bw2.SimpleMessage, ponum string, L *lua.LState) {
+	L.Push(msgToLValue(msg, ponum, L))
+}
+
+func msgToLValue(msg *bw2.SimpleMessage, ponum string, L *lua.LState) lua.LValue {
 	var po bw2.PayloadObject
 	if ponum == "" {
 		po = msg.GetOnePODF("0.0.0.0/0")
@@ -29,8 +33,7 @@ func pushMsg(msg *bw2.SimpleMessage, ponum string, L *lua.LState) {
 
 	if po == nil {
 		table := L.NewTable()
-		L.Push(table)
-		return
+		return table
 	}
 
 	// try different serializations
@@ -48,9 +51,9 @@ func pushMsg(msg *bw2.SimpleMessage, ponum string, L *lua.LState) {
 
 	if err != nil {
 		L.RaiseError("Could not deserialize msg (%v): %+v", err, msg)
-		return
+		return lua.LNil
 	}
-	L.Push(toLValue(value, L))
+	return toLValue(value, L)
 }
 
 // turn an interface{} into a lua.LValue

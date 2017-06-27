@@ -92,13 +92,7 @@ func Subscribe(L *lua.LState) int {
 	// new thread?
 	go func() {
 		for msg := range sub {
-			//msg.Dump()
-			schedMutex.Lock()
-			L.Push(f)
-			L.Push(lua.LString(msg.URI))
-			pushMsg(msg, ponum, L)
-			DoCoroutine(L)
-			schedMutex.Unlock()
+			DoCoroutine(L, f, lua.LString(msg.URI), msgToLValue(msg, ponum, L))
 		}
 	}()
 	return 0
@@ -183,13 +177,7 @@ func InvokePeriodically(L *lua.LState) int {
 
 	go func() {
 		for _ = range time.Tick(time.Duration(n) * time.Millisecond) {
-			schedMutex.Lock()
-			L.Push(f)
-			for _, arg := range args {
-				L.Push(arg)
-			}
-			DoCoroutine(L)
-			schedMutex.Unlock()
+			DoCoroutine(L, f, args...)
 		}
 	}()
 	return 0
@@ -230,13 +218,7 @@ func ScheduleEvery(L *lua.LState) int {
 		args = append(args, L.CheckAny(i))
 	}
 	task := func() {
-		schedMutex.Lock()
-		L.Push(f)
-		for _, arg := range args {
-			L.Push(arg)
-		}
-		DoCoroutine(L)
-		schedMutex.Unlock()
+		DoCoroutine(L, f, args...)
 	}
 	ScheduleTask(schedString, task)
 	return 0
@@ -286,23 +268,18 @@ func URIRequire(L *lua.LState) int {
 	return 1
 }
 
-func DoCoroutine(L *lua.LState) int {
-	nargs := L.GetTop()
-	//fmt.Println("NARGS", nargs)
+func DoCoroutine(L *lua.LState, fxn *lua.LFunction, args ...lua.LValue) int {
+	schedMutex.Lock()
 	co, _ := L.NewThread()
-	f := L.ToFunction(1)
-	var args []lua.LValue
-	for i := 2; i <= nargs; i++ {
-		args = append(args, L.CheckAny(i))
-	}
 
 	frame := coroutine{
 		L:    co,
-		fxn:  f,
-		name: f.String(),
+		fxn:  fxn,
+		name: fxn.String(),
 		args: args,
 	}
 
 	coroutines <- frame
+	schedMutex.Unlock()
 	return 0
 }
