@@ -111,12 +111,7 @@ func Query(L *lua.LState) int {
 		L.RaiseError("Error querying %s (%v)", uri, err)
 	}
 	for msg := range sub {
-		L.Push(f)
-		L.Push(lua.LString(msg.URI))
-		pushMsg(msg, ponum, L)
-		if err := L.PCall(2, 0, nil); err != nil {
-			L.RaiseError("Error doing func callback (%v)", err)
-		}
+		DoCoroutine(L, f, lua.LString(msg.URI), msgToLValue(msg, ponum, L))
 	}
 	return 0
 }

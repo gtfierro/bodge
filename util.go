@@ -96,6 +96,8 @@ func toLValue(value interface{}, L *lua.LState) lua.LValue {
 		} else {
 			return lua.LNumber(0)
 		}
+	case nil:
+		return lua.LNil
 	default:
 		L.RaiseError("Could not figure out type %T of %+v", value, value)
 	}
