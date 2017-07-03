@@ -19,8 +19,7 @@ func init() {
 
 func doInterpreter(c *cli.Context) error {
 	// bw2 client
-	client = bw2.ConnectOrExit(c.String("agent"))
-	client.SetEntityFileOrExit(c.String("entity"))
+	client := GetClient(c)
 	client.OverrideAutoChainTo(true)
 
 	L := lua.NewState()
@@ -54,8 +53,7 @@ func doInterpreter(c *cli.Context) error {
 
 func doURI(c *cli.Context) error {
 	// bw2 client
-	client = bw2.ConnectOrExit(c.String("agent"))
-	client.SetEntityFileOrExit(c.String("entity"))
+	client := GetClient(c)
 	client.OverrideAutoChainTo(true)
 
 	if c.NArg() != 2 {
@@ -88,8 +86,7 @@ func doURI(c *cli.Context) error {
 
 func doCat(c *cli.Context) error {
 	// bw2 client
-	client = bw2.ConnectOrExit(c.String("agent"))
-	client.SetEntityFileOrExit(c.String("entity"))
+	client := GetClient(c)
 	client.OverrideAutoChainTo(true)
 
 	if c.NArg() != 1 {
@@ -107,8 +104,7 @@ func doCat(c *cli.Context) error {
 
 func doLs(c *cli.Context) error {
 	// bw2 client
-	client = bw2.ConnectOrExit(c.String("agent"))
-	client.SetEntityFileOrExit(c.String("entity"))
+	client := GetClient(c)
 	client.OverrideAutoChainTo(true)
 
 	if c.NArg() != 1 {

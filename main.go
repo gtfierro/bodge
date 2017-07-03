@@ -1,5 +1,7 @@
 package main
 
+//go:generate go run ragent_entity_bytes.go
+
 import (
 	"os"
 
