@@ -56,6 +56,12 @@ All library functionality is provided through a `bw` module. This is imported au
 local bw = require('bw')
 ```
 
+### Building
+
+Bodge can optionally be built to communicate with a [remote agent](https://github.com/immesys/ragent). Bodge will embed the entity and the ragent client inside the Bodge binary so it can be run on a computer without BOSSWAVE being installed. Use the `build-ragent.sh` script to build this.
+
+By default, Bodge connects to the local BOSSWAVE agent.
+
 ## Concurrency
 
 Bodge is single threaded, so concurrent manipulation of data structures is safe.
