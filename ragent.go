@@ -17,7 +17,7 @@ var _agent = "127.0.0.1:28588"
 const serverVK = "dhv8gHPlQuqs9RDEgH5PzX694YREzCcsocHitVNdZqQ="
 
 func GetClient(c *cli.Context) *bw2.BW2Client {
-	time.Sleep(5 * time.Second)
+	time.Sleep(1 * time.Second)
 	client = bw2.ConnectOrExit(_agent)
 	client.SetEntity([]byte(_entity)[1:])
 	return client
